@@ -1,8 +1,7 @@
 from itertools import chain
 import random
 
-CPUSYMBOL = '@' # Make this nonalphabetic so the player cannot pick it
-CPUSYMBOL2 = '&' # Make this nonalphabetic so the player cannot pick it
+CPUSYMBOL = ['@','&'] # Make this nonalphabetic so the player cannot pick it
 EMPTYSYMBOL = '' # Symbol denoting the empty squares
 
 
@@ -37,24 +36,18 @@ def create_game(gamemode = 'Local', cpu_func = None):
         if cpu_func == None:
             'Invalid CPU Choice function!'
             return False
+        cpu_func = [cpu_func]
         name = 'Player 1'
         players[create_player(name)] = name
-        players[CPUSYMBOL] = 'CPU'
+        players[CPUSYMBOL[0]] = 'CPU'
 
-        if gamemode == '2CPU':
-            if type(cpu_func) != list:
-                print('Invalid CPU Choice function! Select two CPU functions in 2CPU mode!')
-                return False
-            players[CPUSYMBOL] = 'CPU'
-            players[CPUSYMBOL2] = 'CPU2'
+    if gamemode == '2CPU':
+        if type(cpu_func) != list:
+            print('Invalid CPU Choice function! Select two CPU functions in 2CPU mode!')
+            return False
+        players[CPUSYMBOL[0]] = 'CPU'
+        players[CPUSYMBOL[1]] = 'CPU2'
 
-
-
-
-
-            name = 'Player 1'
-            players[create_player(name)] = name
-            players[CPUSYMBOL] = 'CPU'
 
     firsttime = True
     while True:
@@ -68,8 +61,9 @@ def create_game(gamemode = 'Local', cpu_func = None):
 
             pp_grid(grid)
             print(f"{player_name}'s turn!")
-            if symbol == CPUSYMBOL:
-                row, col = cpu_func(grid)
+            if symbol in CPUSYMBOL:
+                cpu = ''.join(CPUSYMBOL).find(symbol)
+                row, col = cpu_func[cpu](grid)
                 grid = insert_symbol(symbol, grid, row, col)
             else:
                 print('Put your symbol in an empty square: (row,col)')
@@ -78,9 +72,9 @@ def create_game(gamemode = 'Local', cpu_func = None):
             if checkWin(grid):
                 print(f'{player_name} won. Congratulations!')
                 return
-        print(f'lenempty: {len(get_empty(grid))} ')
-        if len(get_empty(grid)) == 0:
-            print("The grid is full: Draw!")
+            if len(get_empty(grid)) == 0:
+                print("The grid is full: Draw!")
+                return
 
 def insert_symbol(symbol, grid, row = None, col = None):
     newgrid = grid
